@@ -1,0 +1,12 @@
+import bookshelf from 'bookshelf';
+import database from '../connection/knex';
+
+const bookshelfImpl = bookshelf(database);
+
+const <%= className %> = bookshelfImpl.Model.extend({
+	tableName: '<%= tableName %> ',
+	idAttribute: '<%= idAttribute %>'
+});
+
+export default <%= className %>;
+
