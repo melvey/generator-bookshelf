@@ -2,11 +2,15 @@
 module.exports {
 	client: '<%= connection %>',
 	connection: {
+<% if(credentials) { %>
 		host: '<%= host %>',
 		user: '<%= user %>',
 		password: '<%= password %>',
 		database: '<%= dbname %>',
 		charset: 'utf8'
+<% } else { %>
+		filename: '<%= filename %>',
+<% } %>
 	},
 	pool: {
 		min: 1,

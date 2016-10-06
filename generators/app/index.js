@@ -21,6 +21,14 @@ module.exports = yeoman.Base.extend({
       'Welcome to the solid ' + chalk.red('generator-bookshelf') + ' generator!'
     ));
 
+		// Show the DB credentials promps for all connections except sqlite
+		var showDbCredentials = function(answers) {
+			return answers.connection !== 'sqlite3';
+		}
+		var showDbFilename = function(answers) {
+			return !showDbCredentials(answers);
+		}
+
     var prompts = [
 			{
 				type: 'list',
@@ -30,34 +38,46 @@ module.exports = yeoman.Base.extend({
 				default: 'mysql'
 			},
 			{
+				when: showDbCredentials,
 				type: 'input',
 				name: 'host',
 				message: 'Database host',
 				default: 'localhost'
 			},
 			{
+				when: showDbCredentials,
 				type: 'input',
 				name: 'user',
 				message: 'Database user',
 				default: '<USER>'
 			},
 			{
+				when: showDbCredentials,
 				type: 'password',
 				name: 'password',
 				message: 'Database password',
 				default: '<PASSWORD>'
 			},
 			{
+				when: showDbCredentials,
 				type: 'input',
 				name: 'dbname',
 				message: 'Database name',
 				default: '<DBNAME>'
+			},
+			{
+				when: showDbFilename,
+				type: 'input',
+				name: 'filename',
+				message: 'Database file',
+				default: '<Filename>'
 			}
 		];
 
     return this.prompt(prompts).then(function (props) {
       // To access props later use this.props.someAnswer;
       this.props = props;
+			this.props.credentials = showDbCredentials(props);
     }.bind(this));
   },
 
@@ -74,10 +94,12 @@ module.exports = yeoman.Base.extend({
 			this.destinationPath('src/config/database.js'),
 			{
 				connection: this.props.connection,
+				credentials: this.props.credentials,
 				host: this.props.host,
 				user: this.props.user,
 				password: this.props.password,
-				dbname: this.props.dbname
+				dbname: this.props.dbname,
+				filename: this.props.filename
 			}
 		);
 		this.fs.copyTpl(
@@ -85,21 +107,24 @@ module.exports = yeoman.Base.extend({
 			this.destinationPath('src/config/templates/database.js'),
 			{
 				connection: this.props.connection,
+				credentials: this.props.credentials,
 				host: '<HOSTNAME>',
 				user: '<USER>',
 				password: '<PASSWORD>',
-				dbname: '<DBNAME>'
+				dbname: '<DBNAME>',
+				filename: '<FILENAME>'
 			}
 		);
 
 		// Add knex migration file
-		const now = Date();
-		const nowString = this.getUTCFullYear() 
-        + pad(this.getUTCMonth() + 1) 
-        + pad(this.getUTCDate()) 
-        + pad(this.getUTCHours()) 
-        + pad(this.getUTCMinutes()) 
-        + pad(this.getUTCSeconds());
+		const now = new Date();
+		console.log(now);
+		const nowString = now.getUTCFullYear() 
+        + now.getUTCMonth() + 1 
+        + now.getUTCDate() 
+        + now.getUTCHours() 
+        + now.getUTCMinutes() 
+        + now.getUTCSeconds();
     this.fs.copy(
 		this.templatePath('migration.js'),
       this.destinationPath('scripts/database/'+nowString+'_setup.js')
@@ -110,7 +135,7 @@ module.exports = yeoman.Base.extend({
 			scripts: {
 				migratedb: "knex --knexfile src/config/database.js migrate:latest",
 				createmigration: "knex --knexfile src/config/database migrate:make update"
-			}
+			},
 			dependencies: {
 				knex: '0.12.2',
 				bookshelf: '0.10.2'
