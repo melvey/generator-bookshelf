@@ -1,11 +1,28 @@
 import bookshelf from 'bookshelf';
 import database from '../connection/knex';
-
+<% for( var i = 0; i < relationships.length; i++) {
+%>import <%= relationships[i].model %> from './<%= relationships[i].model %>;
+<% } %>
 const bookshelfImpl = bookshelf(database);
 
 const <%= className %> = bookshelfImpl.Model.extend({
 	tableName: '<%= tableName %> ',
-	idAttribute: '<%= idAttribute %>'
+	idAttribute: '<%= idAttribute %>'<%
+	for( var i = 0; i < relationships.length; i++) {
+	%>,
+
+	<%= relationships[i].model.charAt(0).toLowerCase() + relationships[i].model.slice(1) %>: function() {
+<% if(relationships[i].relationship === 'hasOne' ) {
+%>		return this.hasOne(<%= relationships[i].model %>, '<%= relationships[i].foreignKey %>');
+<% } else if(relationships[i].relationship === 'belongsTo' ) {
+%>		return this.belongsTo(<%= relationships[i].model %>, '<%= relationships[i].foreignKey %>');
+<% } else if(relationships[i].relationship === 'hasMany' ) {
+%>		return this.hasMany(<%= relationships[i].model %>, '<%= relationships[i].foreignKey %>');
+<% } else if(relationships[i].relationship === 'belongsToMany' ) {
+%>		return this.belongsToMany(<%= relationships[i].model %>, '<%=relationships[i].joiningTable %>', '<%= relationships[i].foreignKey %>', '<%= relationships[i].otherKey %>');
+<% 	}
+%>	}
+<%}%>
 });
 
 export default <%= className %>;
