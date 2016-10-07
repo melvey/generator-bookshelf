@@ -1,7 +1,7 @@
 import bookshelf from 'bookshelf';
-import database from '../connection/knex';
+import database from './connection/knex';
 <% for( var i = 0; i < relationships.length; i++) {
-%>import <%= relationships[i].model %> from './<%= relationships[i].model %>;
+%>import <%= relationships[i].model %> from './<%= relationships[i].model %>';
 <% } %>
 const bookshelfImpl = bookshelf(database);
 

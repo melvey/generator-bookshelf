@@ -40,8 +40,8 @@ module.exports = yeoman.Base.extend({
 		var relationships = [];
 		var askRelationship = function(self) {
 			var showQuestion = function(answers) { return answers.add};
-			var foreignKeyText = function(answers) { return ['belongsTo', 'belongsToMany'].indexOf(answers.relationship) >= 0 ? 'Foreign key (in this model)' : 'Foreign key (in target model)'; };
-			var foreignKeyDefault= function(answers) { return ['belongsTo', 'belongsToMany'].indexOf(answers.relationship) >= 0 ? loadTableName(answers.model) + '_id' : self.props.tableName + '_id'; };
+			var foreignKeyText = function(answers) { return 'belongsTo' == answers.relationship >= 0 ? 'Foreign key (in this model)' : 'Foreign key (in target model)'; };
+			var foreignKeyDefault= function(answers) { return 'belongsTo' == answers.relationship >= 0 ? loadTableName(answers.model) + '_id' : self.props.tableName + '_id'; };
 
 			var questions = [
 				{
@@ -87,7 +87,7 @@ module.exports = yeoman.Base.extend({
 					type: 'input',
 					name: 'otherKey',
 					message: 'Foreign key in target model',
-					default: self.props.tableName + '_id'
+					default: function(answers) { return loadTableName(answers.model) + '_id' }
 				}
 			];
 
