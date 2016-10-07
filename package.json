@@ -1,6 +1,6 @@
 {
   "name": "generator-bookshelf",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "description": "Generator to create bookshelfjs models",
   "homepage": "",
   "author": {
