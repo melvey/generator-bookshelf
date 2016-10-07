@@ -17,7 +17,7 @@ module.exports = yeoman.Base.extend({
 			return model ? true : false;
 		});
 
-		var loadTablename = function(model) {
+		var loadTableName = function(model) {
 			var tablename = null;
 			var filename = 'src/models/' + model + '.js';
 			if(fs.statSync(filename)) {
@@ -41,7 +41,7 @@ module.exports = yeoman.Base.extend({
 		var askRelationship = function(self) {
 			var showQuestion = function(answers) { return answers.add};
 			var foreignKeyText = function(answers) { return ['belongsTo', 'belongsToMany'].indexOf(answers.relationship) >= 0 ? 'Foreign key (in this model)' : 'Foreign key (in target model)'; };
-			var foreignKeyDefault= function(answers) { return ['belongsTo', 'belongsToMany'].indexOf(answers.relationship) >= 0 ? loadTablename(answers.model) + '_id' : self.props.tableName + '_id'; };
+			var foreignKeyDefault= function(answers) { return ['belongsTo', 'belongsToMany'].indexOf(answers.relationship) >= 0 ? loadTableName(answers.model) + '_id' : self.props.tableName + '_id'; };
 
 			var questions = [
 				{
@@ -85,7 +85,7 @@ module.exports = yeoman.Base.extend({
 				{
 					when: function(answers) { return showQuestion(answers) && answers.relationship === 'belongsToMany'; },
 					type: 'input',
-					name: 'otherTable',
+					name: 'otherKey',
 					message: 'Foreign key in target model',
 					default: self.props.tableName + '_id'
 				}
@@ -125,7 +125,7 @@ module.exports = yeoman.Base.extend({
 
   writing: function () {
 		var tableName = this.props.tableName.replace(/ /g, '');
-		var className = tableName.replace(/_+(.)/g, function(char) { return char.toUpperCase(); });
+		var className = tableName.replace(/_+(.)/g, function(full, char) { return char.toUpperCase(); });
 
 		this.fs.copyTpl(
 			this.templatePath('model.js.ejs'),
